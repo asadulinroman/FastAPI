@@ -1,0 +1,60 @@
+services:
+  fastapi:
+    build: .
+    container_name: fastapi
+    command: uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8001
+    env_file: .env
+    ports:
+      - "8001:8001"
+    networks:
+      - fastapi_net
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery:
+    build: .
+    container_name: celery
+    command: celery -A app.infrastructure.celery.celery_app worker --loglevel=info
+    env_file: .env
+    networks:
+      - fastapi_net
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - fastapi_net
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "check_running" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - fastapi_net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 3s
+      timeout: 1s
+      retries: 5
+
+networks:
+  fastapi_net:
+    driver: bridge
