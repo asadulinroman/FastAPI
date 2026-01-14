@@ -33,4 +33,6 @@ async def send_message_to_email(request: SendMessageToEmailSchema):
 
 @router.get("/health_check")
 async def health_check():
-    return {'result': True}
+    return {{
+        {'status': True}
+    }}
