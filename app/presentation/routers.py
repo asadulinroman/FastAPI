@@ -30,3 +30,7 @@ async def send_message_to_email(request: SendMessageToEmailSchema):
     extracted_text = request.extracted_text
     send_message_to_email_task.delay(email,extracted_text)
     return {'publish': 'OK'}
+
+@router.get("/health_check")
+async def health_check():
+    return {'status': True}
