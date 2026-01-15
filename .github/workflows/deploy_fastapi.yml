@@ -9,20 +9,20 @@ jobs:
     runs-on: self-hosted
     defaults:
       run:
-        shell: bash
+        shell: powershell
 
     steps:
       - name: Clone repo
         uses: actions/checkout@v4
 
       - name: Stop old stack
-        run:
-          if docker compose ps --services > /dev/null 2>&1; then
-            echo "Stopping old running containers"
+        run: |
+          if (docker compose ps --services 2>$null) {
+            Write-Host "Stopping containers"
             docker compose down -v
-          else
-            echo "No containers running — skipping down"
-          fi
+          } else {
+            Write-Host "No containers running"
+          }
 
       - name: Run tests
         run: docker compose run --rm fastapi pytest -xvs
