@@ -17,6 +17,7 @@ jobs:
 
       - name: Stop old stack
         run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
           if (docker compose ps --services 2>$null) {
             Write-Host "Stopping containers"
             docker compose down -v
