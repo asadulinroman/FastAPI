@@ -16,7 +16,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Stop old stack
-        run: docker compose down -v 2>nul || echo "No containers to stop"
+        run: |
+          docker compose down -v 2>nul
+          if %errorlevel% neq 0 echo "No containers to stop"
+          exit /b 0
 
       - name: Run tests
         run: docker compose run --rm fastapi pytest -xvs
