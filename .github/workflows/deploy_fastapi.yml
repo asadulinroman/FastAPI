@@ -1,0 +1,27 @@
+name: Deploy FasAPI on Local PC
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+
+      - name: Stop old stack
+        run: docker compose down - v || echo "No containers to stop"
+
+      - name: Run tests
+        run: docker compose run -rm fastapi pytest -xvs
+
+      - name: Build and start new stack
+        run: docker compose up --build - d
+
+      - name: Health_check endpoint
+        run:
+          sleep 5
+          curl - f http://localhost:8001/health_check
