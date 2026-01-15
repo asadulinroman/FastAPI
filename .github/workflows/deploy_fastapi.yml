@@ -18,17 +18,17 @@ jobs:
       - name: Stop old stack
         run:
           if docker compose ps --services > /dev/null 2>&1; then
-          echo "Stopping old running containers"
-          docker compose down -v
+            echo "Stopping old running containers"
+            docker compose down -v
           else
-          echo "No containers running — skipping down"
+            echo "No containers running — skipping down"
           fi
 
       - name: Run tests
-        run: docker compose run -rm fastapi pytest -xvs
+        run: docker compose run --rm fastapi pytest -xvs
 
       - name: Build and start new stack
-        run: docker compose up --build - d
+        run: docker compose up --build -d
 
       - name: Health_check endpoint
         run:
