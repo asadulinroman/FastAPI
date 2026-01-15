@@ -9,21 +9,14 @@ jobs:
     runs-on: self-hosted
     defaults:
       run:
-        shell: powershell
+        shell: cmd
 
     steps:
       - name: Clone repo
         uses: actions/checkout@v4
 
       - name: Stop old stack
-        run: |
-          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-          if (docker compose ps --services 2>$null) {
-            Write-Host "Stopping containers"
-            docker compose down -v
-          } else {
-            Write-Host "No containers running"
-          }
+        run: docker compose down -v 2>nul || echo "No containers to stop"
 
       - name: Run tests
         run: docker compose run --rm fastapi pytest -xvs
@@ -32,6 +25,6 @@ jobs:
         run: docker compose up --build -d
 
       - name: Health_check endpoint
-        run:
-          sleep 5
-          curl - f http://localhost:8001/health_check
+        run: |
+          timeout /t 5 /nobreak >nul
+          curl.exe -f http://localhost:8001/health_check
