@@ -9,14 +9,20 @@ jobs:
     runs-on: self-hosted
     defaults:
       run:
-        shell: cmd
+        shell: bash
 
     steps:
       - name: Clone repo
         uses: actions/checkout@v4
 
       - name: Stop old stack
-        run: docker compose down - v || echo "No containers to stop"
+        run:
+          if docker compose ps --services > /dev/null 2>&1; then
+          echo "Stopping old running containers"
+          docker compose down -v
+          else
+          echo "No containers running — skipping down"
+          fi
 
       - name: Run tests
         run: docker compose run -rm fastapi pytest -xvs
@@ -26,5 +32,5 @@ jobs:
 
       - name: Health_check endpoint
         run:
-          timeout /t 5 >nul
+          sleep 5
           curl - f http://localhost:8001/health_check
