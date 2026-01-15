@@ -28,7 +28,7 @@ jobs:
       - name: Stop old stack
         run: |
           docker compose down -v 2>nul
-          if %errorlevel% neq 0 echo "No containers to stop"
+          if %errorlevel% neq 0 echo "Нет запущенных контейнеров"
           exit /b 0
 
       - name: Run tests
@@ -39,5 +39,5 @@ jobs:
 
       - name: Health_check endpoint
         run: |
-          timeout /t 5 /nobreak >nul
+          call timeout /t 10 /nobreak
           curl.exe -f http://localhost:8001/health_check
