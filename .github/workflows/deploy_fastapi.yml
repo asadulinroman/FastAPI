@@ -39,5 +39,5 @@ jobs:
 
       - name: Health_check endpoint
         run: |
-          call timeout /t 10 /nobreak
+          powershell -Command "Start-Sleep -Seconds 5"
           curl.exe -f http://localhost:8001/health_check
