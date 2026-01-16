@@ -35,4 +35,5 @@ async def send_message_to_email(request: SendMessageToEmailSchema):
 async def health_check():
     return {
         'status': True
+
     }
